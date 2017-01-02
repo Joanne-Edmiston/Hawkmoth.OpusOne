@@ -29,7 +29,7 @@
         <TextBox x:Name="searchText" HorizontalAlignment="Left" Margin="10,163,0,0" Width="250" TextWrapping="Wrap" Text="bach" VerticalAlignment="Top"/>
         <Button x:Name="search" Content="Search" HorizontalAlignment="Right" Margin="0,154,10,0" VerticalAlignment="Top" Width="85" Click="search_Click"/>
 
-        <ListBox x:Name="AlbumsFound" Margin="10,259,10,10" SelectionChanged="MenuControl_SelectionChanged"
+        <ListBox x:Name="AlbumsFound" Margin="10,259,10,10" SelectionChanged="AlbumsFound_SelectionChanged"
                    Background="Transparent" BorderBrush="Transparent" MaxHeight="500"
                    ScrollViewer.VerticalScrollMode="Auto"
                    ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -40,7 +40,6 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="480,125,-189,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Page>

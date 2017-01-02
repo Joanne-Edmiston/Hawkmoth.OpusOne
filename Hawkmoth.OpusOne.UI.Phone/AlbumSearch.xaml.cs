@@ -26,7 +26,7 @@ namespace Hawkmoth.OpusOne.UI.Phone
     /// </summary>
     public sealed partial class AlbumSearch : Page
     {
-        private ObservableCollection<Album> albums = new ObservableCollection<Album>();
+        private ObservableCollection<Album> albums = MainPage.Current.AlbumsFound;
 
         public AlbumSearch()
         {
@@ -53,18 +53,12 @@ namespace Hawkmoth.OpusOne.UI.Phone
             albums.Clear();
             Message.Text = "Searching albums ...";
 
-            FilterByAlbumName.IsEnabled = false;
-            FilterByArtist.IsEnabled = false;
-
             await DoAlbumSearchAsync(
                 albums, 
                 musicFolder, 
-                searchText.Text.ToLower(), 
+                searchText.Text, 
                 FilterByAlbumName.IsChecked.GetValueOrDefault(), 
                 FilterByArtist.IsChecked.GetValueOrDefault());
-
-            FilterByAlbumName.IsEnabled = true;
-            FilterByArtist.IsEnabled = true;
 
             if (albums.Any())
                 Message.Text = "Search complete";
@@ -74,7 +68,7 @@ namespace Hawkmoth.OpusOne.UI.Phone
         }
 
 
-        private async Task DoAlbumSearchAsync(ObservableCollection<Album> albums, StorageFolder parent, string searchTextLower, bool filterName, bool filterArtist)
+        private async Task DoAlbumSearchAsync(ObservableCollection<Album> albums, StorageFolder parent, string searchText, bool filterName, bool filterArtist)
         {
 
 
@@ -90,9 +84,9 @@ namespace Hawkmoth.OpusOne.UI.Phone
                 var artist = musicProperties.Artist;
 
                 
-                if ((filterName && albumName.ToLower().Contains(searchTextLower))
+                if ((filterName && albumName.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 )
                     ||
-                    (filterArtist && (albumArtist.ToLower().Contains(searchTextLower) || artist.ToLower().Contains(searchTextLower))))
+                    (filterArtist && (albumArtist.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0) || artist.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0))
                 {
                     var album = albums.FirstOrDefault(a => a.Name == albumName);
 
@@ -104,7 +98,6 @@ namespace Hawkmoth.OpusOne.UI.Phone
                             Artist = albumArtist,
                         };
                         albums.Add(album);
-                        AlbumsFound.UpdateLayout();
                     }
 
                     if (!album.Songs.Any(s => s.Path == item.Path))
@@ -112,18 +105,37 @@ namespace Hawkmoth.OpusOne.UI.Phone
                         album.Songs.Add(item);
                     }
                 }
+
+                // Only add the first song to the album for the search
+                if (parent.Name.Equals(albumName, StringComparison.OrdinalIgnoreCase))
+                    break;
             }
 
-            foreach (var item in await parent.GetFoldersAsync()) await DoAlbumSearchAsync(albums, item, searchTextLower, filterName, filterArtist);
+            foreach (var item in await parent.GetFoldersAsync()) await DoAlbumSearchAsync(albums, item, searchText, filterName, filterArtist);
         }
         private void results_Loaded(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void MenuControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void AlbumsFound_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            var albumsListBox = sender as ListBox;
 
+            var selectedAlbum = albumsListBox.SelectedItem as Album;
+
+            if (selectedAlbum != null)
+            {
+                var mainFrame = MainPage.Current.FindName("MainFrame") as Frame;
+
+                MainPage.Current.PlayList = new PlayList
+                {
+                    Name = $"{selectedAlbum.Name} ({selectedAlbum.Artist})",
+                    Songs = selectedAlbum.Songs
+                };
+
+                mainFrame.Navigate(typeof(CurrentPlayList));
+            }
         }
 
         private void FilterOption_Changed(object sender, RoutedEventArgs e)

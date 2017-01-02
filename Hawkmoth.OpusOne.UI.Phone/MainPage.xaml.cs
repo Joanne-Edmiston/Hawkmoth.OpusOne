@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Hawmoth.OpusOne.Core;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -22,6 +24,13 @@ namespace Hawkmoth.OpusOne.UI.Phone
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private ObservableCollection<Album> albumsFound;
+        private List<MenuItem> menuItems = new List<MenuItem>
+        {
+            new MenuItem() { Title = "Album Search",   ClassType = typeof(AlbumSearch) },
+            new MenuItem() { Title = "Playlists",   ClassType = typeof(Playlists) },
+        };
+
         public MainPage()
         {
             InitializeComponent();
@@ -40,6 +49,20 @@ namespace Hawkmoth.OpusOne.UI.Phone
         public List<MenuItem> MenuItems
         {
             get { return menuItems; }
+        }
+
+        public PlayList PlayList { get; set; }
+
+        public ObservableCollection<Album> AlbumsFound
+        {
+            get
+            {
+                return albumsFound ?? (albumsFound = new ObservableCollection<Album>());
+            }
+            set
+            {
+                albumsFound = value;
+            }
         }
 
         /// <summary>
@@ -81,10 +104,6 @@ namespace Hawkmoth.OpusOne.UI.Phone
             }
         }
 
-        private List<MenuItem> menuItems = new List<MenuItem>
-        {
-            new MenuItem() { Title = "Album Search",   ClassType = typeof(AlbumSearch) },
-            new MenuItem() { Title = "Playlists",   ClassType = typeof(Playlists) },
-        };
+      
     }
 }
