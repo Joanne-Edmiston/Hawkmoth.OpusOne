@@ -3,21 +3,36 @@ using Windows.Storage;
 
 namespace Hawmoth.OpusOne.Core
 {
-    public class Album
+    public class Album : Model
     {
-        private List<StorageFile> _songs;
+        private List<StorageFile> songFiles;
+        private List<Song> songs;
 
         public string Name { get; set; }
         public string Artist { get; set; }
-        public List<StorageFile> Songs
+        public string AlbumArtist { get; set; }
+
+        public List<Song> Songs
         {
             get
             {
-                return _songs ?? (_songs = new List<StorageFile>());
+                return songs ?? (songs = new List<Song>());
             }
             set
             {
-                _songs = value;
+                songs = value;
+            }
+        }
+
+        public List<StorageFile> SongFiles
+        {
+            get
+            {
+                return songFiles ?? (songFiles = new List<StorageFile>());
+            }
+            set
+            {
+                songFiles = value;
             }
         }
     }

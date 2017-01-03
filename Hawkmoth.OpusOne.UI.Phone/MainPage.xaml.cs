@@ -1,10 +1,12 @@
-﻿using Hawmoth.OpusOne.Core;
+﻿using Hawkmoth.OpusOne.Data.Phone;
+using Hawmoth.OpusOne.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -40,6 +42,7 @@ namespace Hawkmoth.OpusOne.UI.Phone
             Current = this;
 
             Windows.Phone.UI.Input.HardwareButtons.BackPressed += HardwareButtons_BackPressed;
+
         }
 
 
@@ -70,7 +73,7 @@ namespace Hawkmoth.OpusOne.UI.Phone
         /// </summary>
         /// <param name="e">Event data that describes how this page was reached.
         /// This parameter is typically used to configure the page.</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             // TODO: Prepare page for display here.
 
@@ -82,6 +85,8 @@ namespace Hawkmoth.OpusOne.UI.Phone
 
             if (MainFrame.Content == null)
             {
+                await RunIndexerAsync();
+
                 if (!MainFrame.Navigate(typeof(MainMenu)))
                 {
                     throw new Exception("Failed to load main menu");
@@ -101,6 +106,19 @@ namespace Hawkmoth.OpusOne.UI.Phone
 
                 //Indicate the back button press is handled so the app does not exit
                 e.Handled = true;
+            }
+        }
+
+
+        private async Task RunIndexerAsync()
+        {
+            using (IUnitOfWork uow = new UnitOfWork(App.DB_PATH))
+            {
+                var songRepository = uow.GetRepository<Song>();
+                var albumRepository = uow.GetRepository<Album>();
+
+                await songRepository.CreateTableAsync();
+                await albumRepository.CreateTableAsync();
             }
         }
 

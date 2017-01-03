@@ -100,9 +100,9 @@ namespace Hawkmoth.OpusOne.UI.Phone
                         albums.Add(album);
                     }
 
-                    if (!album.Songs.Any(s => s.Path == item.Path))
+                    if (!album.SongFiles.Any(s => s.Path == item.Path))
                     {
-                        album.Songs.Add(item);
+                        album.SongFiles.Add(item);
                     }
                 }
 
@@ -131,7 +131,7 @@ namespace Hawkmoth.OpusOne.UI.Phone
                 MainPage.Current.PlayList = new PlayList
                 {
                     Name = $"{selectedAlbum.Name} ({selectedAlbum.Artist})",
-                    Songs = selectedAlbum.Songs
+                    Songs = selectedAlbum.SongFiles
                 };
 
                 mainFrame.Navigate(typeof(CurrentPlayList));

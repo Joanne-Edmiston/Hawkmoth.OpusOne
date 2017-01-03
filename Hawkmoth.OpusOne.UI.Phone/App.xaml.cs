@@ -7,6 +7,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -25,7 +26,12 @@ namespace Hawkmoth.OpusOne.UI.Phone
     /// </summary>
     public sealed partial class App : Application
     {
-        private TransitionCollection transitions;
+        private TransitionCollection transitions;     
+            
+        public static string DB_PATH = Path.Combine(Path.Combine(ApplicationData.Current.LocalFolder.Path, "OpusOne.sqlite"));//DataBase Name 
+
+
+
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -35,7 +41,7 @@ namespace Hawkmoth.OpusOne.UI.Phone
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
-        }
+        } 
 
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
